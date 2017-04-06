@@ -217,6 +217,14 @@ class MapScanner extends TileBehavior
 		if ((city.cityTime % 8) == 0) {
 			repairZone(NEW_BUILDING, 3);
 		}
+		
+		int z;
+		if (powerOn) {
+			z = city.bankEffect;
+		} else {
+			z = city.bankEffect / 2;
+		}
+		
 	}
 
 	void doFireStation()

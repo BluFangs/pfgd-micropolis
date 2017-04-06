@@ -172,11 +172,13 @@ public class Micropolis
 	public double roadPercent = 1.0;
 	public double policePercent = 1.0;
 	public double firePercent = 1.0;
-
+	public double bankPercent = 1.0;
+	
 	int taxEffect = 7;
 	int roadEffect = 32;
 	int policeEffect = 1000;
 	int fireEffect = 1000;
+	int bankEffect = 100;
 
 	int cashFlow; //net change in totalFunds in previous year
 
