@@ -121,6 +121,7 @@ public class Micropolis
 	int policeCount;
 	int fireStationCount;
 	int bankCount;
+	int stockCount;
 	int stadiumCount;
 	int coalCount;
 	int nuclearCount;
@@ -137,6 +138,7 @@ public class Micropolis
 	int lastFireStationCount;
 	int lastPoliceCount;
 	int lastBankCount;
+	int lastStockCount;
 
 	int trafficMaxLocationX;
 	int trafficMaxLocationY;
@@ -183,7 +185,8 @@ public class Micropolis
 	int roadEffect = 32;
 	int policeEffect = 1000;
 	int fireEffect = 1000;
-	int bankEffect = 1000; //? FIX? was 100
+	int bankEffect = 1000; //? FIX? not really sure if I need this
+	int stockEffect = 1000;
 
 	int cashFlow; //net change in totalFunds in previous year
 
@@ -541,6 +544,7 @@ public class Micropolis
 		policeCount = 0;
 		fireStationCount = 0;
 		bankCount = 0;
+		stockCount = 0;
 		stadiumCount = 0;
 		coalCount = 0;
 		nuclearCount = 0;
@@ -1469,7 +1473,7 @@ public class Micropolis
 		bb.put("INDUSTRIAL", new MapScanner(this, MapScanner.B.INDUSTRIAL));
 		bb.put("COAL", new MapScanner(this, MapScanner.B.COAL));
 		bb.put("NUCLEAR", new MapScanner(this, MapScanner.B.NUCLEAR));
-		bb.put("NEW_BUILDING", new MapScanner(this, MapScanner.B.NEW_BUILDING));
+		bb.put("BANK", new MapScanner(this, MapScanner.B.BANK));
 		bb.put("STOCK_EXCHANGE", new MapScanner(this, MapScanner.B.STOCK_EXCHANGE));
 		bb.put("FIRESTATION", new MapScanner(this, MapScanner.B.FIRESTATION));
 		bb.put("POLICESTATION", new MapScanner(this, MapScanner.B.POLICESTATION));
@@ -1741,10 +1745,13 @@ public class Micropolis
 		lastFireStationCount = fireStationCount;
 		lastPoliceCount = policeCount;
 		lastBankCount = bankCount;
+		lastStockCount = stockCount;
 
 		BudgetNumbers b = generateBudget();
 
 		budget.taxFund += b.taxIncome;
+		budget.bankFund += b.bankIncome;
+		budget.stockFund =+ b.stockIncome; //look at this again
 		budget.roadFundEscrow -= b.roadFunded;
 		budget.fireFundEscrow -= b.fireFunded;
 		budget.policeFundEscrow -= b.policeFunded;
@@ -1763,6 +1770,9 @@ public class Micropolis
 		bankEffect = b.bankRequest != 0 ?
 			(int)Math.floor(1000.0 * (double)b.bankFunded / (double)b.bankRequest) :
 			1000;
+		stockEffect = b.stockRequest != 0 ?
+				(int)Math.floor(1000.0 * (double)b.stockFunded / (double)b.stockRequest) :
+				1000;
 	}
 
 	public static class FinancialHistory
@@ -1776,7 +1786,7 @@ public class Micropolis
 
 	void collectTax()
 	{
-		int revenue = (budget.taxFund / TAXFREQ) + budget.bankFund;
+		int revenue = (budget.taxFund / TAXFREQ) + budget.bankFund + budget.stockFund;
 		int expenses = -(budget.roadFundEscrow + budget.fireFundEscrow + budget.policeFundEscrow + budget.bankFundEscrow) / TAXFREQ;
 
 		FinancialHistory hist = new FinancialHistory();
@@ -1796,6 +1806,7 @@ public class Micropolis
 		budget.fireFundEscrow = 0;
 		budget.policeFundEscrow = 0;
 		budget.bankFundEscrow = 0;
+		budget.stockFundEscrow = 0;
 	}
 
 	/** Annual maintenance cost of each police station. */
@@ -1804,9 +1815,11 @@ public class Micropolis
 	/** Annual maintenance cost of each fire station. */
 	static final int FIRE_STATION_MAINTENANCE = 100;
 	
-	/** Annual maintenance cost of each bank. */
+	/** Annual maintenance cost of each bank and stock exchange. */
 	static final int BANK_MAINTENANCE = 100;
-
+	
+	static final int STOCK_MAINTENANCE = 100;
+	
 	/**
 	 * Calculate the current budget numbers.
 	 */
@@ -1818,6 +1831,7 @@ public class Micropolis
 		b.firePercent = Math.max(0.0, firePercent);
 		b.policePercent = Math.max(0.0, policePercent);
 		b.bankPercent = Math.max(0.0, bankPercent);
+		b.stockPercent = Math.max(0.0, stockPercent);
 
 		b.previousBalance = budget.totalFunds;
 		b.taxIncome = (int)Math.round(lastTotalPop * landValueAverage / 120 * b.taxRate * FLevels[gameLevel]);
@@ -1827,11 +1841,13 @@ public class Micropolis
 		b.fireRequest = FIRE_STATION_MAINTENANCE * lastFireStationCount;
 		b.policeRequest = POLICE_STATION_MAINTENANCE * lastPoliceCount;
 		b.bankRequest = BANK_MAINTENANCE * lastBankCount;
+		b.stockRequest = STOCK_MAINTENANCE * lastStockCount;
 
 		b.roadFunded = (int)Math.round(b.roadRequest * b.roadPercent);
 		b.fireFunded = (int)Math.round(b.fireRequest * b.firePercent);
 		b.policeFunded = (int)Math.round(b.policeRequest * b.policePercent);
 		b.bankFunded = (int)Math.round(b.bankRequest * b.bankPercent);
+		b.stockFunded = (int)Math.round(b.stockRequest * b.stockPercent);
 
 		int yumDuckets = budget.totalFunds + b.taxIncome;
 		assert yumDuckets >= 0;
@@ -1848,6 +1864,18 @@ public class Micropolis
 					if (yumDuckets >= b.bankFunded)
 					{
 						yumDuckets -= b.bankFunded;
+						if (yumDuckets >= b.stockFunded)
+						{
+							yumDuckets -= b.stockFunded;
+						}
+							else
+							{
+								assert b.stockRequest != 0;
+
+								b.stockFunded = yumDuckets;
+								b.stockPercent = (double)b.stockFunded / (double)b.stockRequest;
+								yumDuckets = 0;
+							}
 					}
 					else
 					{
@@ -1855,6 +1883,8 @@ public class Micropolis
 
 						b.bankFunded = yumDuckets;
 						b.bankPercent = (double)b.bankFunded / (double)b.bankRequest;
+						b.stockFunded = 0;
+						b.stockPercent = 0.0;
 						yumDuckets = 0;
 					}
 				}
@@ -1866,6 +1896,8 @@ public class Micropolis
 					b.policePercent = (double)b.policeFunded / (double)b.policeRequest;
 					b.bankFunded = 0;
 					b.bankPercent = 0.0;
+					b.stockFunded = 0;
+					b.stockPercent = 0.0;
 					yumDuckets = 0;
 				}
 			}
@@ -1879,6 +1911,8 @@ public class Micropolis
 				b.policePercent = 0.0;
 				b.bankFunded = 0;
 				b.bankPercent = 0.0;
+				b.stockFunded = 0;
+				b.stockPercent = 0.0;
 				yumDuckets = 0;
 			}
 		}
@@ -1894,10 +1928,12 @@ public class Micropolis
 			b.policePercent = 0.0;
 			b.bankFunded = 0;
 			b.bankPercent = 0.0;
+			b.stockFunded = 0;
+			b.stockPercent = 0.0;
 		}
 
-		b.operatingExpenses = b.roadFunded + b.fireFunded + b.policeFunded + b.bankFunded;
-		b.newBalance = b.previousBalance + b.taxIncome + b.bankIncome - b.operatingExpenses;
+		b.operatingExpenses = b.roadFunded + b.fireFunded + b.policeFunded + b.bankFunded + b.stockFunded;
+		b.newBalance = b.previousBalance + b.taxIncome + b.bankIncome + b.stockIncome - b.operatingExpenses;
 
 		return b;
 	}
@@ -2011,6 +2047,8 @@ public class Micropolis
 		roadPercent = (double)n / 65536.0;
 		n = dis.readInt();                     
 		bankPercent = (double)n / 65536.0;
+		n = dis.readInt();                     
+		stockPercent = (double)n / 65536.0;
 
 		for (int i = 64; i < 120; i++)
 		{
@@ -2070,6 +2108,7 @@ public class Micropolis
 		out.writeInt((int)(firePercent * 65536));
 		out.writeInt((int)(roadPercent * 65536));
 		out.writeInt((int)(bankPercent * 65536));
+		out.writeInt((int)(stockPercent * 65536));
 		
 		//64
 		for (int i = 64; i < 120; i++) {

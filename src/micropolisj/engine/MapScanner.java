@@ -42,7 +42,7 @@ class MapScanner extends TileBehavior
 		STADIUM_FULL,
 		AIRPORT,
 		SEAPORT,
-		NEW_BUILDING, //Placeholder enum for new building. Change to building name if making a new building
+		BANK, //Placeholder enum for new building. Change to building name if making a new building
 		STOCK_EXCHANGE;
 	}
 
@@ -86,8 +86,8 @@ class MapScanner extends TileBehavior
 		case SEAPORT:
 			doSeaport();
 			return;
-		case NEW_BUILDING:
-			doNewBuilding(); //Call the NEW_BUILDING placeholder function
+		case BANK:
+			doBank(); //bank
 			return;
 		case STOCK_EXCHANGE:
 			doStockExchange();
@@ -214,15 +214,17 @@ class MapScanner extends TileBehavior
 	
 	//Placeholder for a new building
 	//Look to the other do<building name>() functions to guidance on what this function should do.
-	void doNewBuilding()
+	void doBank()
 	{
-		//Very basic building functionality. Checks for power and does "repair"
+		//checks for power and adds one to the bank count when a new building is placed
 		boolean powerOn = checkZonePower();
 		city.bankCount++;
 		if ((city.cityTime % 8) == 0) {
-			repairZone(NEW_BUILDING, 3);
+			repairZone(BANK, 3);
 		}
 		
+		//if the power is on the bank is in full effect; does not check for roads yet
+		//not sure if the bank needs effect ??
 		int z;
 		if (powerOn) {
 			z = city.bankEffect;
@@ -234,11 +236,19 @@ class MapScanner extends TileBehavior
 	
 	void doStockExchange()
 	{
+		//same as bank stuff
 		boolean powerOn = checkZonePower();
+		city.stockCount++;
 		if ((city.cityTime % 8) == 0) {
 			repairZone(STOCK_EXCHANGE, 3);
 		}
 		
+		int z;
+		if (powerOn) {
+			z = city.stockEffect;
+		} else {
+			z = city.stockEffect / 2;
+		}
 		
 	}
 

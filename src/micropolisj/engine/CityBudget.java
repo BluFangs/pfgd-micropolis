@@ -23,8 +23,10 @@ public class CityBudget
 	 */
 	int taxFund;
 	
-	// bank income
+	// bank income and stock income
 	int bankFund;
+	
+	int stockFund;
 
 	/**
 	 * Amount of prepaid road maintenance (in 1/TAXFREQ's).
@@ -43,6 +45,8 @@ public class CityBudget
 	
 	//bank maintenace
 	int bankFundEscrow;
+	
+	int stockFundEscrow;
 
 	CityBudget(Micropolis city)
 	{
