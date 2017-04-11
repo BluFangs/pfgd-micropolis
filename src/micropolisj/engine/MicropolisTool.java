@@ -29,7 +29,7 @@ public enum MicropolisTool
 	POWERPLANT(4, 3000),
 	NUCLEAR(4, 5000),
 	AIRPORT(6, 10000),
-	NEW_BUILDING(3, 1500), //Placeholder for a new tool. 
+	NEW_BUILDING(3, 1500), //how big the bank is, how much it cost
 	STOCK_EXCHANGE(3, 1500),
 	QUERY(1, 0);
 

@@ -151,7 +151,7 @@ public class TileConstants
 	static final char VBRDG2 = 950;
 	static final char VBRDG3 = 951;
 	static final char NEW_BUILDING = 964; //Tile id for the NEW_BUILDING tile. This is the id of the center of the tile as listed in tiles.rc
-	static final char STOCK_EXCHANGE = 973; //Currently the same as new building - FIX
+	static final char STOCK_EXCHANGE = 973; //new tiles?? still doesnt work
 	public static final char LAST_TILE = 977;
 
 	static final char [] RoadTable = new char[] {

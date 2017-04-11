@@ -181,7 +181,7 @@ public class Micropolis
 	int roadEffect = 32;
 	int policeEffect = 1000;
 	int fireEffect = 1000;
-	int bankEffect = 100;
+	int bankEffect = 1000; //? FIX? was 100
 
 	int cashFlow; //net change in totalFunds in previous year
 
