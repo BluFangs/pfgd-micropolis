@@ -54,7 +54,10 @@ class BuildingTool extends ToolStroke
 			
 		case NEW_BUILDING:
 			return applyZone(eff, NEW_BUILDING); //If the tile we're applying is the NEW_BUILDING, use applyZone to place a NEW_BUILDING tile
-
+			
+		case STOCK_EXCHANGE:
+			return applyZone(eff, STOCK_EXCHANGE);
+			
 		default:
 			// not expected
 			throw new Error("unexpected tool: "+tool);

@@ -42,7 +42,8 @@ class MapScanner extends TileBehavior
 		STADIUM_FULL,
 		AIRPORT,
 		SEAPORT,
-		NEW_BUILDING; //Placeholder enum for new building. Change to building name if making a new building
+		NEW_BUILDING, //Placeholder enum for new building. Change to building name if making a new building
+		STOCK_EXCHANGE;
 	}
 
 	@Override
@@ -87,6 +88,9 @@ class MapScanner extends TileBehavior
 			return;
 		case NEW_BUILDING:
 			doNewBuilding(); //Call the NEW_BUILDING placeholder function
+			return;
+		case STOCK_EXCHANGE:
+			doStockExchange();
 			return;
 		default:
 			assert false;
@@ -214,6 +218,7 @@ class MapScanner extends TileBehavior
 	{
 		//Very basic building functionality. Checks for power and does "repair"
 		boolean powerOn = checkZonePower();
+		city.bankCount++;
 		if ((city.cityTime % 8) == 0) {
 			repairZone(NEW_BUILDING, 3);
 		}
@@ -224,6 +229,16 @@ class MapScanner extends TileBehavior
 		} else {
 			z = city.bankEffect / 2;
 		}
+		
+	}
+	
+	void doStockExchange()
+	{
+		boolean powerOn = checkZonePower();
+		if ((city.cityTime % 8) == 0) {
+			repairZone(STOCK_EXCHANGE, 3);
+		}
+		
 		
 	}
 

@@ -1047,11 +1047,12 @@ public class MainWindow extends JFrame
 
 		b6.add(makeToolBtn(MicropolisTool.AIRPORT));
 		
-		//Add the NEW_BUILDING icon to the tool bar
+		//Add the NEW_BUILDING and STOCK EXCHANGE icon to the tool bar
 		c.gridy++;
 		Box b7 = new Box(BoxLayout.X_AXIS);
 		gridBox.add(b7,c);
 		b7.add(makeToolBtn(MicropolisTool.NEW_BUILDING));
+		b7.add(makeToolBtn(MicropolisTool.STOCK_EXCHANGE));
 
 		// add glue to make all elements align toward top
 		c.gridy++;

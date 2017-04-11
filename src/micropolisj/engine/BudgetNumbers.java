@@ -35,4 +35,9 @@ public class BudgetNumbers
 	public int bankRequest;
 	public int bankFunded;
 	public double bankPercent;
+	
+	public int bankIncome;
+	public int bankIncomeRequest;
+	public int bankIncomePercent;
+	
 }

@@ -43,6 +43,10 @@ public class BudgetDialog extends JDialog
 	JLabel bankFundRequest = new JLabel();
 	JLabel bankFundAlloc = new JLabel();
 	JSlider bankFundEntry;
+	
+	JLabel bankIncomeRequest = new JLabel();
+	JLabel bankIncomeAlloc = new JLabel();
+	JSlider bankIncomeEntry;
 
 	JLabel taxRevenueLbl = new JLabel();
 
@@ -58,12 +62,14 @@ public class BudgetDialog extends JDialog
 		int newPolicePct = ((Number) policeFundEntry.getValue()).intValue();
 		int newFirePct = ((Number) fireFundEntry.getValue()).intValue();
 		int newBankPct = ((Number) bankFundEntry.getValue()).intValue();
+		int newBankIncomePct = ((Number) bankIncomeEntry.getValue()).intValue();
 
 		engine.cityTax = newTaxRate;
 		engine.roadPercent = (double)newRoadPct / 100.0;
 		engine.policePercent = (double)newPolicePct / 100.0;
 		engine.firePercent = (double)newFirePct / 100.0;
 		engine.bankPercent = (double)newBankPct / 100.0;
+		engine.bankIncomePercent = (double)newBankIncomePct / 100.0;
 
 		loadBudgetNumbers(false);
 	}
@@ -92,6 +98,9 @@ public class BudgetDialog extends JDialog
 		
 		bankFundRequest.setText(formatFunds(b.bankRequest));
 		bankFundAlloc.setText(formatFunds(b.bankFunded));
+		
+		bankIncomeRequest.setText(formatFunds(b.bankIncomeRequest));
+		bankIncomeAlloc.setText(formatFunds(b.bankIncome));
 	}
 
 	static void adjustSliderSize(JSlider slider)
@@ -125,6 +134,8 @@ public class BudgetDialog extends JDialog
 		adjustSliderSize(policeFundEntry);
 		bankFundEntry = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
 		adjustSliderSize(bankFundEntry);
+		bankIncomeEntry = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+		adjustSliderSize(bankIncomeEntry);
 
 		ChangeListener change = new ChangeListener() {
 		public void stateChanged(ChangeEvent ev) {
@@ -149,12 +160,17 @@ public class BudgetDialog extends JDialog
 
 		JSeparator sep1 = new JSeparator(SwingConstants.HORIZONTAL);
 		mainBox.add(sep1);
-
-		mainBox.add(makeBalancePane());
+		
+		mainBox.add(makeIncomePane());
 
 		JSeparator sep2 = new JSeparator(SwingConstants.HORIZONTAL);
 		mainBox.add(sep2);
 
+		mainBox.add(makeBalancePane());
+		
+		JSeparator sep3 = new JSeparator(SwingConstants.HORIZONTAL);
+		mainBox.add(sep3);
+		
 		mainBox.add(makeOptionsPane());
 
 		JPanel buttonPane = new JPanel();
@@ -225,6 +241,10 @@ public class BudgetDialog extends JDialog
 		c4.gridx = 4;
 		c4.weightx = 0.5;
 		c4.anchor = GridBagConstraints.EAST;
+		GridBagConstraints c5 = new GridBagConstraints();
+		c5.gridx = 4;
+		c5.weightx = 0.5;
+		c5.anchor = GridBagConstraints.EAST;
 
 		c1.gridy = c2.gridy = c3.gridy = 0;
 		fundingRatesPane.add(new JLabel(strings.getString("budgetdlg.funding_level_hdr")), c1);
@@ -256,6 +276,37 @@ public class BudgetDialog extends JDialog
 		fundingRatesPane.add(bankFundAlloc, c3);
 
 		return fundingRatesPane;
+	}
+	
+	private JComponent makeIncomePane()
+	{
+		JPanel makeIncomePane = new JPanel(new GridBagLayout());
+		makeIncomePane.setBorder(BorderFactory.createEmptyBorder(8,0,8,0));
+
+		GridBagConstraints c0 = new GridBagConstraints();
+		c0.gridx = 0;
+		c0.weightx = 0.25;
+		c0.anchor = GridBagConstraints.WEST;
+		GridBagConstraints c1 = new GridBagConstraints();
+		c1.gridx = 1;
+		c1.weightx = 0.25;
+		c1.anchor = GridBagConstraints.EAST;
+		GridBagConstraints c2 = new GridBagConstraints();
+		c2.gridx = 2;
+		c2.weightx = 0.5;
+		c2.anchor = GridBagConstraints.EAST;
+		GridBagConstraints c3 = new GridBagConstraints();
+		c3.gridx = 3;
+		c3.weightx = 0.5;
+		c3.anchor = GridBagConstraints.EAST;
+		
+		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 0;
+		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.bank_income")), c0);
+		makeIncomePane.add(bankIncomeEntry, c1);
+		makeIncomePane.add(bankIncomeRequest, c2);
+		makeIncomePane.add(bankIncomeAlloc, c3);
+
+		return makeIncomePane;
 	}
 
 	private JComponent makeOptionsPane()

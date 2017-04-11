@@ -22,6 +22,9 @@ public class CityBudget
 	 * period (in 1/TAXFREQ's).
 	 */
 	int taxFund;
+	
+	// bank income
+	int bankFund;
 
 	/**
 	 * Amount of prepaid road maintenance (in 1/TAXFREQ's).
@@ -37,6 +40,9 @@ public class CityBudget
 	 * Amount of prepaid police station maintenance (in 1/TAXFREQ's).
 	 */
 	int policeFundEscrow;
+	
+	//bank maintenace
+	int bankFundEscrow;
 
 	CityBudget(Micropolis city)
 	{
