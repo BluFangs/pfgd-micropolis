@@ -40,4 +40,12 @@ public class BudgetNumbers
 	public int bankIncomeRequest;
 	public int bankIncomePercent;
 	
+	public int stockRequest;
+	public int stockFunded;
+	public double stockPercent;
+	
+	public int stockIncome;
+	public int stockIncomeRequest;
+	public int stockIncomePercent;
+	
 }

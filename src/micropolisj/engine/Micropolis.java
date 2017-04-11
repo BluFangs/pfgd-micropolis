@@ -176,6 +176,8 @@ public class Micropolis
 	public double firePercent = 1.0;
 	public double bankPercent = 1.0;
 	public double bankIncomePercent = 1.0;
+	public double stockPercent = 1.0;
+	public double stockIncomePercent = 1.0;
 	
 	int taxEffect = 7;
 	int roadEffect = 32;

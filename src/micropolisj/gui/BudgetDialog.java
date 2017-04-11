@@ -47,6 +47,14 @@ public class BudgetDialog extends JDialog
 	JLabel bankIncomeRequest = new JLabel();
 	JLabel bankIncomeAlloc = new JLabel();
 	JSlider bankIncomeEntry;
+	
+	JLabel stockFundRequest = new JLabel();
+	JLabel stockFundAlloc = new JLabel();
+	JSlider stockFundEntry;
+	
+	JLabel stockIncomeRequest = new JLabel();
+	JLabel stockIncomeAlloc = new JLabel();
+	JSlider stockIncomeEntry;
 
 	JLabel taxRevenueLbl = new JLabel();
 
@@ -63,6 +71,8 @@ public class BudgetDialog extends JDialog
 		int newFirePct = ((Number) fireFundEntry.getValue()).intValue();
 		int newBankPct = ((Number) bankFundEntry.getValue()).intValue();
 		int newBankIncomePct = ((Number) bankIncomeEntry.getValue()).intValue();
+		int newStockPct = ((Number) stockFundEntry.getValue()).intValue();
+		int newStockIncomePct = ((Number) stockIncomeEntry.getValue()).intValue();
 
 		engine.cityTax = newTaxRate;
 		engine.roadPercent = (double)newRoadPct / 100.0;
@@ -70,6 +80,8 @@ public class BudgetDialog extends JDialog
 		engine.firePercent = (double)newFirePct / 100.0;
 		engine.bankPercent = (double)newBankPct / 100.0;
 		engine.bankIncomePercent = (double)newBankIncomePct / 100.0;
+		engine.stockPercent = (double)newStockPct / 100.0;
+		engine.stockIncomePercent = (double)newStockIncomePct / 100.0;
 
 		loadBudgetNumbers(false);
 	}
@@ -101,6 +113,12 @@ public class BudgetDialog extends JDialog
 		
 		bankIncomeRequest.setText(formatFunds(b.bankIncomeRequest));
 		bankIncomeAlloc.setText(formatFunds(b.bankIncome));
+		
+		stockFundRequest.setText(formatFunds(b.stockRequest));
+		stockFundAlloc.setText(formatFunds(b.stockFunded));
+		
+		stockIncomeRequest.setText(formatFunds(b.stockIncomeRequest));
+		stockIncomeAlloc.setText(formatFunds(b.stockIncome));
 	}
 
 	static void adjustSliderSize(JSlider slider)
@@ -136,6 +154,10 @@ public class BudgetDialog extends JDialog
 		adjustSliderSize(bankFundEntry);
 		bankIncomeEntry = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
 		adjustSliderSize(bankIncomeEntry);
+		stockFundEntry = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+		adjustSliderSize(stockFundEntry);
+		stockIncomeEntry = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+		adjustSliderSize(stockIncomeEntry);
 
 		ChangeListener change = new ChangeListener() {
 		public void stateChanged(ChangeEvent ev) {
@@ -146,6 +168,10 @@ public class BudgetDialog extends JDialog
 		roadFundEntry.addChangeListener(change);
 		fireFundEntry.addChangeListener(change);
 		policeFundEntry.addChangeListener(change);
+		bankFundEntry.addChangeListener(change);
+		bankIncomeEntry.addChangeListener(change);
+		stockFundEntry.addChangeListener(change);
+		stockIncomeEntry.addChangeListener(change);
 
 		Box mainBox = new Box(BoxLayout.Y_AXIS);
 		mainBox.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
@@ -274,6 +300,12 @@ public class BudgetDialog extends JDialog
 		fundingRatesPane.add(bankFundEntry, c1);
 		fundingRatesPane.add(bankFundRequest, c2);
 		fundingRatesPane.add(bankFundAlloc, c3);
+		
+		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 5;
+		fundingRatesPane.add(new JLabel(strings.getString("budgetdlg.stock_fund")), c0);
+		fundingRatesPane.add(stockFundEntry, c1);
+		fundingRatesPane.add(stockFundRequest, c2);
+		fundingRatesPane.add(stockFundAlloc, c3);
 
 		return fundingRatesPane;
 	}
@@ -305,6 +337,12 @@ public class BudgetDialog extends JDialog
 		makeIncomePane.add(bankIncomeEntry, c1);
 		makeIncomePane.add(bankIncomeRequest, c2);
 		makeIncomePane.add(bankIncomeAlloc, c3);
+		
+		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 1;
+		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.stock_income")), c0);
+		makeIncomePane.add(stockIncomeEntry, c1);
+		makeIncomePane.add(stockIncomeRequest, c2);
+		makeIncomePane.add(stockIncomeAlloc, c3);
 
 		return makeIncomePane;
 	}
