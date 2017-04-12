@@ -332,13 +332,18 @@ public class BudgetDialog extends JDialog
 		c3.weightx = 0.5;
 		c3.anchor = GridBagConstraints.EAST;
 		
-		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 0;
+		c1.gridy = c2.gridy = c3.gridy = 0;
+		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.investment_hdr")), c1);
+		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.deposited_hdr")), c2);
+		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.income_hdr")), c3);
+		
+		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 1;
 		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.bank_income")), c0);
 		makeIncomePane.add(bankIncomeEntry, c1);
 		makeIncomePane.add(bankIncomeRequest, c2);
 		makeIncomePane.add(bankIncomeAlloc, c3);
 		
-		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 1;
+		c0.gridy = c1.gridy = c2.gridy = c3.gridy = 2;
 		makeIncomePane.add(new JLabel(strings.getString("budgetdlg.stock_income")), c0);
 		makeIncomePane.add(stockIncomeEntry, c1);
 		makeIncomePane.add(stockIncomeRequest, c2);
@@ -449,6 +454,8 @@ public class BudgetDialog extends JDialog
 		c0.gridy++;
 		balancePane.add(new JLabel(strings.getString("budgetdlg.taxes_collected")), c0);
 		c0.gridy++;
+		balancePane.add(new JLabel(strings.getString("budgetdlg.capital_gains")), c0);
+		c0.gridy++;
 		balancePane.add(new JLabel(strings.getString("budgetdlg.capital_expenses")), c0);
 		c0.gridy++;
 		balancePane.add(new JLabel(strings.getString("budgetdlg.operating_expenses")), c0);
@@ -487,6 +494,11 @@ public class BudgetDialog extends JDialog
 			JLabel taxIncomeLbl = new JLabel();
 			taxIncomeLbl.setText(formatFunds(f.taxIncome));
 			balancePane.add(taxIncomeLbl, c1);
+			
+			c1.gridy++;
+			JLabel bankIncomeLbl = new JLabel();
+			bankIncomeLbl.setText(formatFunds(f.bankIncome));
+			balancePane.add(bankIncomeLbl, c1);
 
 			c1.gridy++;
 			JLabel capExpensesLbl = new JLabel();

@@ -1756,6 +1756,7 @@ public class Micropolis
 		budget.fireFundEscrow -= b.fireFunded;
 		budget.policeFundEscrow -= b.policeFunded;
 		budget.bankFundEscrow -= b.bankFunded;
+		budget.stockFundEscrow -= b.stockFunded;
 
 		taxEffect = b.taxRate;
 		roadEffect = b.roadRequest != 0 ?
@@ -1780,18 +1781,22 @@ public class Micropolis
 		public int cityTime;
 		public int totalFunds;
 		public int taxIncome;
+		public int bankIncome;
+		public int stockIncome;
 		public int operatingExpenses;
 	}
 	public ArrayList<FinancialHistory> financialHistory = new ArrayList<FinancialHistory>();
 
 	void collectTax()
 	{
-		int revenue = (budget.taxFund / TAXFREQ) + budget.bankFund + budget.stockFund;
-		int expenses = -(budget.roadFundEscrow + budget.fireFundEscrow + budget.policeFundEscrow + budget.bankFundEscrow) / TAXFREQ;
+		int revenue = budget.taxFund / TAXFREQ;
+		int gains = (budget.bankFund + budget.stockFund) / TAXFREQ;
+		int expenses = -(budget.roadFundEscrow + budget.fireFundEscrow + budget.policeFundEscrow + budget.bankFundEscrow + budget.stockFundEscrow) / TAXFREQ;
 
 		FinancialHistory hist = new FinancialHistory();
 		hist.cityTime = cityTime;
 		hist.taxIncome = revenue;
+		hist.bankIncome = gains;
 		hist.operatingExpenses = expenses;
 
 		cashFlow = revenue - expenses;
@@ -1801,7 +1806,8 @@ public class Micropolis
 		financialHistory.add(0,hist);
 
 		budget.taxFund = 0;
-		budget.bankFund = 0;
+		budget.bankFund = 0;		//how much money you get
+		budget.stockFund = 0;
 		budget.roadFundEscrow = 0;
 		budget.fireFundEscrow = 0;
 		budget.policeFundEscrow = 0;
@@ -1832,11 +1838,15 @@ public class Micropolis
 		b.policePercent = Math.max(0.0, policePercent);
 		b.bankPercent = Math.max(0.0, bankPercent);
 		b.stockPercent = Math.max(0.0, stockPercent);
-
+		
+		b.bankIncomeRequest = bankCount * 1000;
+		
 		b.previousBalance = budget.totalFunds;
 		b.taxIncome = (int)Math.round(lastTotalPop * landValueAverage / 120 * b.taxRate * FLevels[gameLevel]);
+		//the amount of profit generated from the bank -- look at again, numbers a weird
+		b.bankIncome = (int)Math.round((b.bankIncomeRequest/100));
 		assert b.taxIncome >= 0;
-
+		assert b.bankIncome >= 0;
 		b.roadRequest = (int)Math.round((lastRoadTotal + lastRailTotal * 2) * RLevels[gameLevel]);
 		b.fireRequest = FIRE_STATION_MAINTENANCE * lastFireStationCount;
 		b.policeRequest = POLICE_STATION_MAINTENANCE * lastPoliceCount;
@@ -1849,7 +1859,7 @@ public class Micropolis
 		b.bankFunded = (int)Math.round(b.bankRequest * b.bankPercent);
 		b.stockFunded = (int)Math.round(b.stockRequest * b.stockPercent);
 
-		int yumDuckets = budget.totalFunds + b.taxIncome;
+		int yumDuckets = budget.totalFunds + b.taxIncome + b.bankIncome;
 		assert yumDuckets >= 0;
 
 		if (yumDuckets >= b.roadFunded)

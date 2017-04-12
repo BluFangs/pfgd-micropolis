@@ -37,7 +37,7 @@ public class BudgetNumbers
 	public double bankPercent;
 	
 	public int bankIncome;
-	public int bankIncomeRequest;
+	public int bankIncomeRequest;	//more of a deposit
 	public int bankIncomePercent;
 	
 	public int stockRequest;
