@@ -57,11 +57,15 @@ public enum MicropolisMessage
 	HEAVY_TRAFFIC_REPORT,  //  41           HelicopterSprite
 	FLOOD_REPORT,
 	MELTDOWN_REPORT,        // 43            doMeltdown
+	ROBBERY_REPORT,
+	STOCK_CRASH_REPORT,
 	RIOTING_REPORT,
 
 	// added by Jason
-	NO_NUCLEAR_PLANTS;
-
+	NO_NUCLEAR_PLANTS,
+	NO_BANK,
+	NO_STOCK_EXCHANGE;
+	
 	/** Whether the message should be displayed in the notification pane. */
 	public boolean useNotificationPane = false;
 
@@ -75,6 +79,8 @@ public enum MicropolisMessage
 	POP_500K_REACHED.useNotificationPane = true;
 	HIGH_CRIME.useNotificationPane = true;
 	HIGH_POLLUTION.useNotificationPane = true;
+	ROBBERY_REPORT.useNotificationPane = true;
+	STOCK_CRASH_REPORT.useNotificationPane = true;
 
 	// location-specific
 	FLOOD_REPORT.useNotificationPane = true;

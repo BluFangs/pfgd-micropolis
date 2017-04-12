@@ -111,13 +111,13 @@ public class BudgetDialog extends JDialog
 		bankFundRequest.setText(formatFunds(b.bankRequest));
 		bankFundAlloc.setText(formatFunds(b.bankFunded));
 		
-		bankIncomeRequest.setText(formatFunds(b.bankIncomeRequest));
+		bankIncomeRequest.setText(formatFunds(b.bankIncomeFund));
 		bankIncomeAlloc.setText(formatFunds(b.bankIncome));
 		
 		stockFundRequest.setText(formatFunds(b.stockRequest));
 		stockFundAlloc.setText(formatFunds(b.stockFunded));
 		
-		stockIncomeRequest.setText(formatFunds(b.stockIncomeRequest));
+		stockIncomeRequest.setText(formatFunds(b.stockIncomeFund));
 		stockIncomeAlloc.setText(formatFunds(b.stockIncome));
 	}
 
@@ -475,7 +475,7 @@ public class BudgetDialog extends JDialog
 			Micropolis.FinancialHistory f = engine.financialHistory.get(i);
 			Micropolis.FinancialHistory fPrior = engine.financialHistory.get(i+1);
 			int cashFlow = f.totalFunds - fPrior.totalFunds;
-			int capExpenses = -(cashFlow - f.taxIncome + f.operatingExpenses);
+			int capExpenses = -(cashFlow - f.taxIncome - f.capitalGains + f.operatingExpenses);
 
 			c1.gridx++;
 			c1.gridy = 0;
@@ -497,7 +497,7 @@ public class BudgetDialog extends JDialog
 			
 			c1.gridy++;
 			JLabel bankIncomeLbl = new JLabel();
-			bankIncomeLbl.setText(formatFunds(f.bankIncome));
+			bankIncomeLbl.setText(formatFunds(f.capitalGains));
 			balancePane.add(bankIncomeLbl, c1);
 
 			c1.gridy++;

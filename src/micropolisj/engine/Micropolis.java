@@ -208,6 +208,7 @@ public class Micropolis
 	static final int VALVERATE = 2;
 	public static final int CENSUSRATE = 4;
 	static final int TAXFREQ = 48;
+	static final double STOCK_GAINS = Math.random() * 0.5 + (-0.2);
 
 	public void spend(int amount)
 	{
@@ -913,6 +914,8 @@ public class Micropolis
 			setFire();
 			break;
 		case 2:
+			makeRobbery();
+			break;
 		case 3:
 			makeFlood();
 			break;
@@ -1751,7 +1754,7 @@ public class Micropolis
 
 		budget.taxFund += b.taxIncome;
 		budget.bankFund += b.bankIncome;
-		budget.stockFund =+ b.stockIncome; //look at this again
+		budget.stockFund += b.stockIncome; //look at this again
 		budget.roadFundEscrow -= b.roadFunded;
 		budget.fireFundEscrow -= b.fireFunded;
 		budget.policeFundEscrow -= b.policeFunded;
@@ -1781,8 +1784,8 @@ public class Micropolis
 		public int cityTime;
 		public int totalFunds;
 		public int taxIncome;
-		public int bankIncome;
-		public int stockIncome;
+		public int capitalGains;
+		public int stolenFunds;
 		public int operatingExpenses;
 	}
 	public ArrayList<FinancialHistory> financialHistory = new ArrayList<FinancialHistory>();
@@ -1796,10 +1799,10 @@ public class Micropolis
 		FinancialHistory hist = new FinancialHistory();
 		hist.cityTime = cityTime;
 		hist.taxIncome = revenue;
-		hist.bankIncome = gains;
+		hist.capitalGains = gains;
 		hist.operatingExpenses = expenses;
 
-		cashFlow = revenue - expenses;
+		cashFlow = revenue + gains - expenses;
 		spend(-cashFlow);
 
 		hist.totalFunds = budget.totalFunds;
@@ -1824,7 +1827,11 @@ public class Micropolis
 	/** Annual maintenance cost of each bank and stock exchange. */
 	static final int BANK_MAINTENANCE = 100;
 	
+	static final int BANK_INCOME = 1000;
+	
 	static final int STOCK_MAINTENANCE = 100;
+	
+	static final int STOCK_INCOME = 1000;
 	
 	/**
 	 * Calculate the current budget numbers.
@@ -1839,12 +1846,16 @@ public class Micropolis
 		b.bankPercent = Math.max(0.0, bankPercent);
 		b.stockPercent = Math.max(0.0, stockPercent);
 		
-		b.bankIncomeRequest = bankCount * 1000;
+		b.bankIncomeFund = BANK_INCOME * lastBankCount;
+		b.stockIncomeFund = STOCK_INCOME * lastStockCount;
 		
 		b.previousBalance = budget.totalFunds;
 		b.taxIncome = (int)Math.round(lastTotalPop * landValueAverage / 120 * b.taxRate * FLevels[gameLevel]);
 		//the amount of profit generated from the bank -- look at again, numbers a weird
-		b.bankIncome = (int)Math.round((b.bankIncomeRequest/100));
+		b.bankIncome = (int)Math.round((b.bankIncomeFund + b.taxIncome) * 0.05);
+		//not really sure if you'll ever lose money...
+		b.stockIncome = (int)Math.round((b.stockIncomeFund) * STOCK_GAINS);
+		
 		assert b.taxIncome >= 0;
 		assert b.bankIncome >= 0;
 		b.roadRequest = (int)Math.round((lastRoadTotal + lastRailTotal * 2) * RLevels[gameLevel]);
@@ -1859,7 +1870,7 @@ public class Micropolis
 		b.bankFunded = (int)Math.round(b.bankRequest * b.bankPercent);
 		b.stockFunded = (int)Math.round(b.stockRequest * b.stockPercent);
 
-		int yumDuckets = budget.totalFunds + b.taxIncome + b.bankIncome;
+		int yumDuckets = budget.totalFunds + b.taxIncome + b.bankIncome + b.stockIncome;
 		assert yumDuckets >= 0;
 
 		if (yumDuckets >= b.roadFunded)
@@ -1985,6 +1996,15 @@ public class Micropolis
 
 		clearMes();
 		sendMessageAt(MicropolisMessage.MELTDOWN_REPORT, xpos, ypos);
+	}
+	
+	void doRobbery(int xpos, int ypos)
+	{
+		
+		budget.totalFunds -= budget.bankFund/2;
+		
+		clearMes();
+		sendMessageAt(MicropolisMessage.ROBBERY_REPORT, xpos, ypos);
 	}
 
 	static final int [] MltdwnTab = { 30000, 20000, 10000 };
@@ -2382,7 +2402,31 @@ public class Micropolis
 			}
 		}
 	}
+	
+	//make a robbery occur
+	public boolean makeRobbery()
+	{
+		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
+		for (int y = 0; y < map.length; y++) {
+			for (int x = 0; x < map[y].length; x++) {
+				if (getTile(x, y) == BANK) {
+					candidates.add(new CityLocation(x,y));
+				}
+			}
+		}
 
+		if (candidates.isEmpty()) {
+			// tell caller that no nuclear plants were found
+			return false;
+		}
+
+		int i = PRNG.nextInt(candidates.size());
+		CityLocation p = candidates.get(i);
+		doRobbery(p.x, p.y);
+		return true;
+		
+	}
+	
 	/**
 	 * Force a meltdown to occur.
 	 * @return true if a metldown was initiated.

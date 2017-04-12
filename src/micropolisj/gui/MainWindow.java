@@ -655,6 +655,28 @@ public class MainWindow extends JFrame
 			}
 			}));
 		disastersMenu.add(menuItem);
+		
+		menuItem = new JMenuItem(strings.getString("menu.disasters.ROBBERY"));
+		setupKeys(menuItem, "menu.disasters.ROBBERY");
+		menuItem.addActionListener(wrapActionListener(
+			new ActionListener() {
+			public void actionPerformed(ActionEvent ev)
+			{
+				onInvokeDisasterClicked(Disaster.ROBBERY);
+			}
+			}));
+		disastersMenu.add(menuItem);
+		
+		menuItem = new JMenuItem(strings.getString("menu.disasters.STOCKCRASH"));
+		setupKeys(menuItem, "menu.disasters.STOCKCRASH");
+		menuItem.addActionListener(wrapActionListener(
+			new ActionListener() {
+			public void actionPerformed(ActionEvent ev)
+			{
+				onInvokeDisasterClicked(Disaster.STOCKCRASH);
+			}
+			}));
+		disastersMenu.add(menuItem);
 
 		JMenu priorityMenu = new JMenu(strings.getString("menu.speed"));
 		setupKeys(priorityMenu, "menu.speed");
@@ -1548,6 +1570,11 @@ public class MainWindow extends JFrame
 			break;
 		case EARTHQUAKE:
 			getEngine().makeEarthquake();
+			break;
+		case ROBBERY:
+			if (!getEngine().makeRobbery()) {
+				messagesPane.appendCityMessage(MicropolisMessage.NO_BANK);
+			}
 			break;
 		default:
 			assert false; //unknown disaster
