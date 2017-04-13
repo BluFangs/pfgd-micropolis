@@ -312,6 +312,7 @@ public class BudgetDialog extends JDialog
 	
 	private JComponent makeIncomePane()
 	{
+		//added new pane for income stuff
 		JPanel makeIncomePane = new JPanel(new GridBagLayout());
 		makeIncomePane.setBorder(BorderFactory.createEmptyBorder(8,0,8,0));
 

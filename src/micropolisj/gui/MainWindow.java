@@ -1576,6 +1576,11 @@ public class MainWindow extends JFrame
 				messagesPane.appendCityMessage(MicropolisMessage.NO_BANK);
 			}
 			break;
+		case STOCKCRASH:
+			if (!getEngine().makeStockCrash()) {
+				messagesPane.appendCityMessage(MicropolisMessage.NO_STOCK_EXCHANGE);
+			}
+			break;
 		default:
 			assert false; //unknown disaster
 		}

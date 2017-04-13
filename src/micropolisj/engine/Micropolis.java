@@ -185,7 +185,7 @@ public class Micropolis
 	int roadEffect = 32;
 	int policeEffect = 1000;
 	int fireEffect = 1000;
-	int bankEffect = 1000; //? FIX? not really sure if I need this
+	int bankEffect = 1000;
 	int stockEffect = 1000;
 
 	int cashFlow; //net change in totalFunds in previous year
@@ -920,6 +920,7 @@ public class Micropolis
 			makeFlood();
 			break;
 		case 4:
+			makeStockCrash();
 			break;
 		case 5:
 			makeTornado();
@@ -1771,12 +1772,13 @@ public class Micropolis
 		fireEffect = b.fireRequest != 0 ?
 			(int)Math.floor(1000.0 * (double)b.fireFunded / (double)b.fireRequest) :
 			1000;
+		//banks are only effective if theyre funded, doesn't really affect income rn
 		bankEffect = b.bankRequest != 0 ?
 			(int)Math.floor(1000.0 * (double)b.bankFunded / (double)b.bankRequest) :
 			1000;
 		stockEffect = b.stockRequest != 0 ?
-				(int)Math.floor(1000.0 * (double)b.stockFunded / (double)b.stockRequest) :
-				1000;
+			(int)Math.floor(1000.0 * (double)b.stockFunded / (double)b.stockRequest) :
+			1000;
 	}
 
 	public static class FinancialHistory
@@ -1855,7 +1857,7 @@ public class Micropolis
 		b.taxIncome = (int)Math.round(lastTotalPop * landValueAverage / 120 * b.taxRate * FLevels[gameLevel]);
 		//the amount of profit generated from the bank -- look at again, numbers a weird
 		b.bankIncome = (int)Math.round((b.bankIncomeFund + b.taxIncome) * 0.05);
-		//not really sure if you'll ever lose money...
+		//random percent of stock funds gained
 		b.stockIncome = (int)Math.round((b.stockIncomeFund) * STOCK_GAINS);
 		
 		assert b.taxIncome >= 0;
@@ -1875,6 +1877,7 @@ public class Micropolis
 		int yumDuckets = budget.totalFunds + b.taxIncome + b.bankIncome + b.stockIncome;
 		assert yumDuckets >= 0;
 
+		//a giant mess of if statements; i think it changes the sliders?
 		if (yumDuckets >= b.roadFunded)
 		{
 			yumDuckets -= b.roadFunded;
@@ -1891,14 +1894,14 @@ public class Micropolis
 						{
 							yumDuckets -= b.stockFunded;
 						}
-							else
-							{
-								assert b.stockRequest != 0;
+						else
+						{
+							assert b.stockRequest != 0;
 
-								b.stockFunded = yumDuckets;
-								b.stockPercent = (double)b.stockFunded / (double)b.stockRequest;
-								yumDuckets = 0;
-							}
+							b.stockFunded = yumDuckets;
+							b.stockPercent = (double)b.stockFunded / (double)b.stockRequest;
+							yumDuckets = 0;
+						}
 					}
 					else
 					{
@@ -2003,10 +2006,21 @@ public class Micropolis
 	void doRobbery(int xpos, int ypos)
 	{
 		
-		budget.totalFunds -= budget.bankFund/2;
+		setFunds(budget.totalFunds -= budget.bankFund/2);
+		fireFundsChanged();
 		
 		clearMes();
 		sendMessageAt(MicropolisMessage.ROBBERY_REPORT, xpos, ypos);
+	}
+	
+	void doStockCrash(int xpos, int ypos)
+	{
+		
+		setFunds(budget.totalFunds -= budget.stockFund);
+		fireFundsChanged();
+		
+		clearMes();
+		sendMessageAt(MicropolisMessage.STOCK_CRASH_REPORT, xpos, ypos);
 	}
 
 	static final int [] MltdwnTab = { 30000, 20000, 10000 };
@@ -2408,6 +2422,8 @@ public class Micropolis
 	//make a robbery occur
 	public boolean makeRobbery()
 	{
+		
+		//checks if there are banks, if there are, choose one and have it be robbed
 		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
 		for (int y = 0; y < map.length; y++) {
 			for (int x = 0; x < map[y].length; x++) {
@@ -2418,13 +2434,37 @@ public class Micropolis
 		}
 
 		if (candidates.isEmpty()) {
-			// tell caller that no nuclear plants were found
+			// tell caller that no banks were found
 			return false;
 		}
 
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
 		doRobbery(p.x, p.y);
+		return true;
+		
+	}
+	
+	public boolean makeStockCrash()
+	{
+		
+		//same as bank stuff
+		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
+		for (int y = 0; y < map.length; y++) {
+			for (int x = 0; x < map[y].length; x++) {
+				if (getTile(x, y) == STOCK_EXCHANGE) {
+					candidates.add(new CityLocation(x,y));
+				}
+			}
+		}
+
+		if (candidates.isEmpty()) {
+			return false;
+		}
+
+		int i = PRNG.nextInt(candidates.size());
+		CityLocation p = candidates.get(i);
+		doStockCrash(p.x, p.y);
 		return true;
 		
 	}

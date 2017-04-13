@@ -223,7 +223,7 @@ class MapScanner extends TileBehavior
 			repairZone(BANK, 3);
 		}
 		
-		//if the power is on the bank is in full effect; does not check for roads yet
+		//if the power is on the bank is in full effect; does not check for roads
 		//not sure if the bank needs effect ??
 		int z;
 		if (powerOn) {
