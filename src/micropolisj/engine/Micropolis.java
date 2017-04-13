@@ -208,7 +208,6 @@ public class Micropolis
 	static final int VALVERATE = 2;
 	public static final int CENSUSRATE = 4;
 	static final int TAXFREQ = 48;
-	static final double STOCK_GAINS = Math.random() * 0.5 + (-0.2);
 
 	public void spend(int amount)
 	{
@@ -624,6 +623,7 @@ public class Micropolis
 			if (cityTime % TAXFREQ == 0) {
 				collectTax();
 				evaluation.cityEvaluation();
+				STOCK_GAINS = Math.random() * 0.5 - 0.2;
 			}
 			break;
 
@@ -1754,7 +1754,7 @@ public class Micropolis
 
 		budget.taxFund += b.taxIncome;
 		budget.bankFund += b.bankIncome;
-		budget.stockFund += b.stockIncome; //look at this again
+		budget.stockFund += (b.stockIncomeFund) * STOCK_GAINS; 			//look at this again
 		budget.roadFundEscrow -= b.roadFunded;
 		budget.fireFundEscrow -= b.fireFunded;
 		budget.policeFundEscrow -= b.policeFunded;
@@ -1832,6 +1832,8 @@ public class Micropolis
 	static final int STOCK_MAINTENANCE = 100;
 	
 	static final int STOCK_INCOME = 1000;
+	
+	static double STOCK_GAINS;
 	
 	/**
 	 * Calculate the current budget numbers.
